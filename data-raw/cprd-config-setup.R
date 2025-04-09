@@ -8,7 +8,7 @@
 
 library(tidyverse)
 # setwd("~/Git/aurum")
- setwd("C:/Users/ky279/OneDrive - University of Exeter/CPRD/CPRD-analysis-package")
+ setwd("H:/Projects/CPRD/CVF_aurum_package/CPRD-analysis-package/")
 # check for dependencies and install them if needed
 if (!"here" %in% rownames(installed.packages()))
   install.packages("here", repos="https://www.stats.bris.ac.uk/R/", lib=Sys.getenv("R_LIBS_USER"))

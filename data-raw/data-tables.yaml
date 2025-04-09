@@ -1,26 +1,9 @@
 naming:
   consultation: consultation
-  drugIssue: drug_issue
+  drugIssue: drugissue
   observation: observation
   patient: patient
   practice: practice
-  problem: problem
-  referral: referral
-  staff: staff
-  patidsWithLinkage: patids_with_linkage
-  hesAcp: hes_acp
-  hesCcare: hes_ccare
-  hesDiagnosisEpi: hes_diagnosis_epi
-  hesDiagnosisHosp: hes_diagnosis_hosp
-  hesEpisodes: hes_episodes
-  hesHospital: hes_hospital
-  hesPatient: hes_patient
-  hesPrimaryDiagHosp: hes_primary_diag_hosp
-  hesProceduresEpi: hes_procedures_epi
-  onsDeath: ons_death
-  patientImd: patient_imd
-  practiceImd: practice_imd
-  denominatorData: denominator_data
 tables:
   consultation:
     drop: |
