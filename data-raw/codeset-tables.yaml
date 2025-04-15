@@ -3,7 +3,7 @@ naming:
 tables:
   codeSets:
     drop: |
-      DROP TABLE IF EXISTS {codesetsDb}.{codeSets}
+      DROP TABLE IF EXISTS {analysisDb}.{codeSets}
     create: |
       CREATE TABLE IF NOT EXISTS {codesetsDb}.{codeSets}
       (codeid VARCHAR(20),
