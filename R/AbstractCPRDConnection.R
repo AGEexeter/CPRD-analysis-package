@@ -19,6 +19,8 @@ AbstractCPRDConnection = R6::R6Class("AbstractCPRDConnection", public=list(
 
   #' @field .conventions - internal the table naming conventions in the databases
   .conventions = NULL,
+  
+  .codesetsDb = NULL,
 
   #### Constructor ----
 
@@ -46,6 +48,7 @@ AbstractCPRDConnection = R6::R6Class("AbstractCPRDConnection", public=list(
       self$.con = con
       self$.dataDb = cfg$dataDatabase
       self$.analysisDb = cfg$analysisDatabase
+      self$.codesetsDb = cfg$codesetsDatabase
       # browser()
       # set up the session config
       for (name in names(cfg$sessionConfig)) {
@@ -59,6 +62,7 @@ AbstractCPRDConnection = R6::R6Class("AbstractCPRDConnection", public=list(
       self$.profile = cprdConnection$.profile
       self$.dataDb = cprdConnection$.dataDb
       self$.analysisDb = cprdConnection$.analysisDb
+      self$.codesetsDb = cprdConnection$.codesetsDb
     }
     self$.conventions = self$namingConventions()
 
