@@ -22,7 +22,7 @@ CPRDCodeSets = R6::R6Class("CPRDCodeSets", inherit = AbstractCPRDConnection, pub
     super$initialize(cprdConnection = cprdData)
     self$.data = cprdData
 
-    analysisDb = self$.analysisDb
+    codesetsDb = self$.codesetsDb
     con = self$.con
 
     #TODO: remove this as we should not need admin role to create tables in analysisDb
@@ -38,7 +38,7 @@ CPRDCodeSets = R6::R6Class("CPRDCodeSets", inherit = AbstractCPRDConnection, pub
       
       self$execSql(template = aurum::codeSetsSql$tables$codeSets$create)
     }
-    self$codeSets = dplyr::tbl(con, dbplyr::in_schema(analysisDb, aurum::codeSetsSql$naming$codeSets))
+    self$codeSets = dplyr::tbl(con, dbplyr::in_schema(codesetsDb, aurum::codeSetsSql$naming$codeSets))
 
 
   },
