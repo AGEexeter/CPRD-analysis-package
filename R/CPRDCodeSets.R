@@ -27,14 +27,10 @@ CPRDCodeSets = R6::R6Class("CPRDCodeSets", inherit = AbstractCPRDConnection, pub
 
     #TODO: remove this as we should not need admin role to create tables in analysisDb
     #self$enableAdmin()
-    #Katie - have removed, but have added below for cprd_jun24dm_analysis only
+    
 
     # data tables
     if (!self$tableExists(aurum::codeSetsSql$naming$codeSets)) {
-      
-      if (cprd$.analysisDb=="cprd_jun24dm_analysis") {
-        self$enableAdmin()
-      }
       
       self$execSql(template = aurum::codeSetsSql$tables$codeSets$create)
     }
@@ -99,10 +95,6 @@ CPRDCodeSets = R6::R6Class("CPRDCodeSets", inherit = AbstractCPRDConnection, pub
   #' @param type the type of the code as the column name it will match on e.g. medcodeid, prodcodeid. This can be used for any kind of codeid column
   #' @return A TRUE/FALSE depending on if the code set was successfully loaded.
   loadCodeSet = function(codeSetDf, category=NULL, name, version, colname=NULL, type) {
-
-    if (cprd$.analysisDb=="cprd_jun24dm_analysis") {
-      self$enableAdmin()
-    }
     
     if (!type %in% aurum::lookupSql$keys) stop("type must be one of: ",paste0(aurum::lookupSql$keys,collapse = ", "))
     table = names(lookupSql$keys[lookupSql$keys==type])
@@ -280,20 +272,12 @@ CPRDCodeSets = R6::R6Class("CPRDCodeSets", inherit = AbstractCPRDConnection, pub
   #' @param version the code set version
   deleteCodeSetVersion = function(name,version) {
     
-    if (cprd$.analysisDb=="cprd_jun24dm_analysis") {
-      self$enableAdmin()
-    }
-    
     self$execSql(aurum::codeSetsSql$tables$codeSets$deleteNamedVersion, name=name, version=version)
   },
 
   #' @description delete all versions of a code set. This will affect all users of the CPRD database.
   #' @param name the code set name
   deleteCodeSet = function(name) {
-    
-    if (cprd$.analysisDb=="cprd_jun24dm_analysis") {
-      self$enableAdmin()
-    }
     
     self$execSql(aurum::codeSetsSql$tables$codeSets$deleteNamed, name=name)
   },
