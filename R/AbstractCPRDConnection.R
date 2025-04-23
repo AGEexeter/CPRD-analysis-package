@@ -89,6 +89,7 @@ AbstractCPRDConnection = R6::R6Class("AbstractCPRDConnection", public=list(
       list(
         analysisDb = self$.analysisDb,
         dataDb = self$.dataDb,
+        codesetsDb = self$.codesetsDb,
         analysis = analysisName
       ),
       aurum::analysisSql$naming,
