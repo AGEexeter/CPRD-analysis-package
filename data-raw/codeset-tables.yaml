@@ -16,7 +16,7 @@ tables:
       INDEX (codeid)
       )
       ENGINE=MYISAM
-      CHARSET=latin1 COLLATE=latin1_general_ci
+      CHARSET=latin1 COLLATE=latin1_swedish_ci
     deleteNamedVersion: |
       DELETE FROM {codesetsDb}.{codeSets} where version={version} and setname={name}
     deleteNamed: |

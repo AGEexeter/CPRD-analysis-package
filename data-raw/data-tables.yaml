@@ -22,7 +22,7 @@ tables:
       consmedcodeid BIGINT,
       PRIMARY KEY (consid))
       ENGINE=InnoDB
-      CHARSET=latin1 COLLATE=latin1_general_ci
+      CHARSET=latin1 COLLATE=latin1_swedish_ci
     load: |
       LOAD DATA INFILE '{path}' IGNORE
       INTO TABLE {dataDb}.{consultation}
@@ -57,7 +57,7 @@ tables:
       estnhscost DECIMAL(10,4),
       PRIMARY KEY (issueid))
       ENGINE=InnoDB
-      CHARSET=latin1 COLLATE=latin1_general_ci
+      CHARSET=latin1 COLLATE=latin1_swedish_ci
     load: |
       LOAD DATA INFILE '{path}' IGNORE
       INTO TABLE {dataDb}.{drugIssue}
@@ -93,7 +93,7 @@ tables:
       probobsid BIGINT UNSIGNED,
       PRIMARY KEY (obsid))
       ENGINE=InnoDB
-      CHARSET=latin1 COLLATE=latin1_general_ci
+      CHARSET=latin1 COLLATE=latin1_swedish_ci
     load: |
       LOAD DATA INFILE '{path}' IGNORE
       INTO TABLE {dataDb}.{observation}
@@ -131,7 +131,7 @@ tables:
       cprd_ddate DATE,
       PRIMARY KEY (patid))
       ENGINE=InnoDB
-      CHARSET=latin1 COLLATE=latin1_general_ci
+      CHARSET=latin1 COLLATE=latin1_swedish_ci
     load: |
       LOAD DATA INFILE '{path}' IGNORE
       INTO TABLE {dataDb}.{patient}
@@ -156,7 +156,7 @@ tables:
       region MEDIUMINT,
       PRIMARY KEY (pracid))
       ENGINE=InnoDB
-      CHARSET=latin1 COLLATE=latin1_general_ci
+      CHARSET=latin1 COLLATE=latin1_swedish_ci
     load: |
       LOAD DATA INFILE '{path}' IGNORE
       INTO TABLE {dataDb}.{practice}
@@ -184,7 +184,7 @@ tables:
       probstatusid MEDIUMINT,
       signid MEDIUMINT
       ) ENGINE=InnoDB
-      CHARSET=latin1 COLLATE=latin1_general_ci
+      CHARSET=latin1 COLLATE=latin1_swedish_ci
     load: |
       LOAD DATA INFILE '{path}' IGNORE
       INTO TABLE {dataDb}.{problem}

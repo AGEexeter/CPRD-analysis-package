@@ -7,36 +7,36 @@
 set role 'role_full_admin';
 
 # Create the databases for 202010 diabetes dataset
-# CREATE SCHEMA IF NOT EXISTS `cprd_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-# CREATE SCHEMA IF NOT EXISTS `cprd_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-# CREATE SCHEMA IF NOT EXISTS `cprd_analysis_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-# CREATE SCHEMA IF NOT EXISTS `cprd_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
+# CREATE SCHEMA IF NOT EXISTS `cprd_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+# CREATE SCHEMA IF NOT EXISTS `cprd_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+# CREATE SCHEMA IF NOT EXISTS `cprd_analysis_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+# CREATE SCHEMA IF NOT EXISTS `cprd_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 
 # Create the databases for 202105 full dataset
-# CREATE SCHEMA IF NOT EXISTS `full_cprd_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-# CREATE SCHEMA IF NOT EXISTS `full_cprd_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-# CREATE SCHEMA IF NOT EXISTS `full_cprd_analysis_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-# CREATE SCHEMA IF NOT EXISTS `full_cprd_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
+# CREATE SCHEMA IF NOT EXISTS `full_cprd_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+# CREATE SCHEMA IF NOT EXISTS `full_cprd_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+# CREATE SCHEMA IF NOT EXISTS `full_cprd_analysis_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+# CREATE SCHEMA IF NOT EXISTS `full_cprd_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 
 # Create the the databases for 202402 dementia dataset
-CREATE SCHEMA IF NOT EXISTS `cprd_dementia_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-CREATE SCHEMA IF NOT EXISTS `cprd_dementia_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-CREATE SCHEMA IF NOT EXISTS `cprd_dementia_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_dementia_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_dementia_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_dementia_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 
 # Create the the databases for 202402 diabetes dataset
-CREATE SCHEMA IF NOT EXISTS `cprd_feb24dm_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-CREATE SCHEMA IF NOT EXISTS `cprd_feb24dm_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-CREATE SCHEMA IF NOT EXISTS `cprd_feb24dm_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_feb24dm_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_feb24dm_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_feb24dm_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 
 # Create the the databases for 202402 depression dataset
-CREATE SCHEMA IF NOT EXISTS `cprd_feb24depression_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-CREATE SCHEMA IF NOT EXISTS `cprd_feb24depression_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-CREATE SCHEMA IF NOT EXISTS `cprd_feb24depression_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_feb24depression_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_feb24depression_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_feb24depression_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 
 # Create the the databases for 202406 diabetes dataset
-CREATE SCHEMA IF NOT EXISTS `cprd_jun24dm_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-CREATE SCHEMA IF NOT EXISTS `cprd_jun24dm_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
-CREATE SCHEMA IF NOT EXISTS `cprd_jun24dm_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_general_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_jun24dm_data_dev` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_jun24dm_data` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE SCHEMA IF NOT EXISTS `cprd_jun24dm_analysis` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 
 
 # Create the roles:

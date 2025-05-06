@@ -15,7 +15,7 @@ tables:
         rowsloaded BIGINT
       )
       ENGINE=MYISAM
-      CHARSET=latin1 COLLATE=latin1_general_ci;
+      CHARSET=latin1 COLLATE=latin1_swedish_ci;
     insert: |
       INSERT INTO {dataDb}.{loadLog}
       VALUES (

@@ -24,7 +24,7 @@ tables:
       observations BIGINT,
       PRIMARY KEY (medcodeid))
       ENGINE=MYISAM
-      CHARSET=latin1 COLLATE=latin1_general_ci;
+      CHARSET=latin1 COLLATE=latin1_swedish_ci;
     load: |
       LOAD DATA INFILE '{path}' IGNORE
       INTO TABLE {dataDb}.{medDict}
@@ -51,7 +51,7 @@ tables:
       drugissues BIGINT,
       PRIMARY KEY (prodcodeid))
       ENGINE=MYISAM
-      CHARSET=latin1 COLLATE=latin1_general_ci;
+      CHARSET=latin1 COLLATE=latin1_swedish_ci;
     load: |
       LOAD DATA INFILE '{path}' IGNORE
       INTO TABLE {dataDb}.{productDict}
