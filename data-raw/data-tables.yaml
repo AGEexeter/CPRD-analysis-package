@@ -5,6 +5,14 @@ naming:
   patient: patient
   practice: practice
   problem: problem
+  hesCcare: hes_ccare
+  hesDiagnosisEpi: hes_diagnosis_epi
+  hesDiagnosisHosp: hes_diagnosis_hosp
+  hesEpisodes: hes_episodes
+  hesHospital: hes_hospital
+  hesPatient: hes_patient
+  hesPrimaryDiagHosp: hes_primary_diag_hosp
+  hesProceduresEpi: hes_procedures_epi
 tables:
   consultation:
     drop: |
@@ -200,6 +208,317 @@ tables:
       parentprobrelid = NULLIF(@orig_parentprobrelid,''),
       probstatusid = NULLIF(@orig_probstatusid,''),
       signid = NULLIF(@orig_signid,'')
+  hesPatient:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{hesPatient}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{hesPatient}
+      (patid BIGINT UNSIGNED NOT NULL,
+      pracid MEDIUMINT,
+      cprd_mpsid BIGINT UNSIGNED,
+      gen_ethnicity TINYINT,
+      PRIMARY KEY (patid))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{hesPatient}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, pracid, cprd_mpsid, @gen_ethnicity)
+      SET gen_ethnicity = IF(@gen_ethnicity = 'White', 1,
+      IF(@gen_ethnicity = 'Bl_Carib', 2,
+      IF(@gen_ethnicity = 'Bl_Afric', 3,
+      IF(@gen_ethnicity = 'Bl_Other', 4,
+      IF(@gen_ethnicity = 'Indian', 5,
+      IF(@gen_ethnicity = 'Pakistani', 6,
+      IF(@gen_ethnicity = 'Bangladesi', 7,
+      IF(@gen_ethnicity = 'Oth_Asian', 8,
+      IF(@gen_ethnicity = 'Chinese', 9,
+      IF(@gen_ethnicity = 'Mixed', 10,
+      IF(@gen_ethnicity = 'Other', 11,
+      IF(@gen_ethnicity = 'Unknown', NULL, NULL))))))))))))
+  hesHospital:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{hesHospital}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{hesHospital}
+      (patid BIGINT UNSIGNED NOT NULL,
+      spno BIGINT UNSIGNED NOT NULL,
+      admidate DATE,
+      discharged DATE,
+      admimeth CHAR(2),
+      admisorc TINYINT,
+      disdest TINYINT,
+      dismeth TINYINT,
+      duration MEDIUMINT,
+      elecdate DATE,
+      elecdur SMALLINT,
+      PRIMARY KEY (patid, spno))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{hesHospital}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, spno, @admidate, @discharged, admimeth, admisorc, disdest, dismeth, @duration, @elecdate, @elecdur)
+      SET admidate = STR_TO_DATE(NULLIF(@admidate,''),'%Y/%m/%d'),
+      discharged = STR_TO_DATE(NULLIF(@discharged,''),'%Y/%m/%d'),
+      duration = NULLIF(@duration,''),
+      elecdate = STR_TO_DATE(NULLIF(@elecdate,''),'%Y/%m/%d'),
+      elecdur = NULLIF(@elecdur,'')
+  hesEpisodes:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{hesEpisodes}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{hesEpisodes}
+      (patid BIGINT UNSIGNED NOT NULL,
+      spno BIGINT UNSIGNED,
+      epikey BIGINT UNSIGNED NOT NULL,
+      admidate DATE,
+      epistart DATE,
+      epiend DATE,
+      discharged DATE,
+      eorder SMALLINT,
+      epidur MEDIUMINT,
+      epitype TINYINT,
+      admimeth CHAR(2),
+      admisorc TINYINT,
+      disdest TINYINT,
+      dismeth TINYINT,
+      mainspef CHAR(3),
+      tretspef CHAR(3),
+      pconsult CHAR(16),
+      intmanig TINYINT,
+      classpat TINYINT,
+      firstreg TINYINT,
+      ethnos TINYINT,
+      PRIMARY KEY (patid, epikey))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{hesEpisodes}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, spno, epikey, @admidate, @epistart, @epiend, @discharged, eorder, @epidur, epitype, admimeth, @admisorc, @disdest, dismeth, @mainspef, @tretspef, @pconsult, @intmanig, classpat, @firstreg, @ethnos)
+      SET admidate = STR_TO_DATE(NULLIF(@admidate,''),'%Y/%m/%d'),
+      epistart = STR_TO_DATE(NULLIF(@epistart,''),'%Y/%m/%d'),
+      epiend = STR_TO_DATE(NULLIF(@epiend,''),'%Y/%m/%d'),
+      discharged = STR_TO_DATE(NULLIF(@discharged,''),'%Y/%m/%d'),
+      epidur = NULLIF(@epidur,''),
+      admisorc = NULLIF(@admisorc,''),
+      disdest = NULLIF(@disdest,''),
+      tretspef = NULLIF(NULLIF(@tretspef,''),'000'),
+      mainspef = NULLIF(@mainspef,''),
+      pconsult = IF(@pconsult='&' OR @pconsult='99',NULL,@pconsult),
+      intmanig = NULLIF(@intmanig,''),
+      firstreg = NULLIF(@firstreg,''),
+      ethnos = IF(@ethnos = 'White', 1,
+      IF(@ethnos = 'Bl_Carib', 2,
+      IF(@ethnos = 'Bl_Afric', 3,
+      IF(@ethnos = 'Bl_Other', 4,
+      IF(@ethnos = 'Indian', 5,
+      IF(@ethnos = 'Pakistani', 6,
+      IF(@ethnos = 'Bangladesi', 7,
+      IF(@ethnos = 'Oth_Asian', 8,
+      IF(@ethnos = 'Chinese', 9,
+      IF(@ethnos = 'Mixed', 10,
+      IF(@ethnos = 'Other', 11,
+      IF(@ethnos = 'Unknown', NULL, NULL))))))))))))
+  hesDiagnosisEpi:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{hesDiagnosisEpi}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{hesDiagnosisEpi}
+      (patid BIGINT UNSIGNED NOT NULL,
+      spno BIGINT UNSIGNED,
+      epikey BIGINT UNSIGNED NOT NULL,
+      epistart DATE,
+      epiend DATE,
+      ICD CHAR(5),
+      ICDx CHAR(2),
+      d_order TINYINT NOT NULL,
+      PRIMARY KEY (patid, epikey, d_order))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{hesDiagnosisEpi}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, spno, epikey, @epistart, @epiend, @ICD, @ICDx, d_order)
+      SET epistart = STR_TO_DATE(NULLIF(@epistart,''),'%Y/%m/%d'),
+      epiend = STR_TO_DATE(NULLIF(@epiend,''),'%Y/%m/%d'),
+      ICD = NULLIF(@ICD,'-.'),
+      ICDx = NULLIF(@ICDx,'')
+  hesDiagnosisHosp:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{hesDiagnosisHosp}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{hesDiagnosisHosp}
+      (patid BIGINT UNSIGNED,
+      spno BIGINT UNSIGNED,
+      admidate DATE,
+      discharged DATE,
+      ICD CHAR(5),
+      ICDx CHAR(2),
+      primary_key INT PRIMARY KEY AUTO_INCREMENT)
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{hesDiagnosisHosp}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, spno, @admidate, @discharged, @ICD, @ICDx)
+      SET admidate = STR_TO_DATE(NULLIF(@admidate,''),'%Y/%m/%d'),
+      discharged = STR_TO_DATE(NULLIF(@discharged,''),'%Y/%m/%d'),
+      ICD = NULLIF(@ICD,'-.'),
+      ICDx = NULLIF(@ICDx,'')
+  hesPrimaryDiagHosp:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{hesPrimaryDiagHosp}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{hesPrimaryDiagHosp}
+      (patid BIGINT UNSIGNED,
+      spno BIGINT UNSIGNED,
+      admidate DATE,
+      discharged DATE,
+      ICD_PRIMARY CHAR(5),
+      ICDx CHAR(2),
+      primary_key INT PRIMARY KEY AUTO_INCREMENT)
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{hesPrimaryDiagHosp}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, spno, @admidate, @discharged, ICD_PRIMARY, @ICDx)
+      SET admidate = STR_TO_DATE(NULLIF(@admidate,''),'%Y/%m/%d'),
+      discharged = STR_TO_DATE(NULLIF(@discharged,''),'%Y/%m/%d'),
+      ICDx = NULLIF(@ICDx,'')
+  hesProceduresEpi:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{hesProceduresEpi}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{hesProceduresEpi}
+      (patid BIGINT UNSIGNED NOT NULL,
+      spno BIGINT UNSIGNED,
+      epikey BIGINT UNSIGNED NOT NULL,
+      admidate DATE,
+      epistart DATE,
+      epiend DATE,
+      discharged DATE,
+      OPCS CHAR(4),
+      evdate DATE,
+      p_order TINYINT NOT NULL,
+      PRIMARY KEY (patid, epikey, p_order))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{hesProceduresEpi}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, spno, epikey, @admidate, @epistart, @epiend, @discharged, @OPCS, @evdate, p_order)
+      SET admidate = STR_TO_DATE(NULLIF(@admidate,''),'%Y/%m/%d'),
+      epistart = STR_TO_DATE(NULLIF(@epistart,''),'%Y/%m/%d'),
+      epiend = STR_TO_DATE(NULLIF(@epiend,''),'%Y/%m/%d'),
+      discharged = STR_TO_DATE(NULLIF(@discharged,''),'%Y/%m/%d'),
+      OPCS=NULLIF(NULLIF(@OPCS,''), '&'),
+      evdate = STR_TO_DATE(NULLIF(@evdate,''),'%Y/%m/%d')
+  hesCcare:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{hesCcare}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{hesCcare}
+      (patid BIGINT UNSIGNED,
+      spno BIGINT UNSIGNED,
+      epikey BIGINT UNSIGNED,
+      admidate DATE,
+      discharged DATE,
+      epistart DATE,
+      epiend DATE,
+      eorder TINYINT,
+      ccstartdate DATE,
+      ccstarttime TIME,
+      ccdisrdydate DATE,
+      ccdisrdytime TIME,
+      ccdisdate DATE,
+      ccdistime TIME,
+      ccadmitype TINYINT,
+      ccadmisorc TINYINT,
+      ccsorcloc TINYINT,
+      ccdisstat TINYINT,
+      ccdisdest TINYINT,
+      ccdisloc TINYINT,
+      cclev2days SMALLINT,
+      cclev3days SMALLINT,
+      bcardsupdays SMALLINT,
+      acardsupdays SMALLINT,
+      bressupdays SMALLINT,
+      aressupdays SMALLINT,
+      gisupdays SMALLINT,
+      liversupdays SMALLINT,
+      neurosupdays SMALLINT,
+      rensupdays SMALLINT,
+      dermsupdays SMALLINT,
+      orgsupmax TINYINT,
+      ccunitfun TINYINT,
+      unitbedconfig TINYINT,
+      bestmatch BOOL DEFAULT NULL,
+      ccapcrel TINYINT,
+      primary_key INT PRIMARY KEY AUTO_INCREMENT)
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{hesCcare}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, spno, epikey, @admidate, @discharged, @epistart, @epiend, eorder, @ccstartdate, @ccstarttime, @ccdisrdydate, @ccdisrdytime, @ccdisdate, @ccdistime, @ccadmitype, @ccadmisorc, @ccsorcloc, @ccdisstat, @ccdisdest, @ccdisloc, @cclev2days, @cclev3days, @bcardsupdays, @acardsupdays, @bressupdays, @aressupdays, @gisupdays, @liversupdays, @neurosupdays, @rensupdays, @dermsupdays, @orgsupmax, @ccunitfun, @unitbedconfig, @bestmatch, ccapcrel)
+      SET admidate = STR_TO_DATE(@admidate,'%Y/%m/%d'),
+      discharged = STR_TO_DATE(NULLIF(@discharged,''),'%Y/%m/%d'),
+      epistart = STR_TO_DATE(@epistart,'%Y/%m/%d'),
+      epiend = STR_TO_DATE(@epiend,'%Y/%m/%d'),
+      ccstartdate = STR_TO_DATE(@ccstartdate,'%Y/%m/%d'),
+      ccstarttime = NULLIF(@ccstarttime,''),
+      ccdisrdydate = STR_TO_DATE(NULLIF(@ccdisrdydate,''),'%Y/%m/%d'),
+      ccdisrdytime = NULLIF(@ccdisrdytime,''),
+      ccdisdate = STR_TO_DATE(@ccdisdate,'%Y/%m/%d'),
+      ccdistime = NULLIF(@ccdistime,''),
+      ccadmitype = NULLIF(NULLIF(@ccadmitype,''), 'NU'),
+      ccadmisorc = NULLIF(@ccadmisorc,''),
+      ccsorcloc = NULLIF(@ccsorcloc,''),
+      ccdisstat = NULLIF(@ccdisstat,''),
+      ccdisdest = NULLIF(@ccdisdest,''),
+      ccdisloc = NULLIF(@ccdisloc,''),
+      cclev2days = IF(@cclev2days='' OR @cclev2days='999',NULL,@cclev2days),
+      cclev3days = IF(@cclev3days='' OR @cclev3days='999',NULL,@cclev3days),
+      bcardsupdays = IF(@bcardsupdays='' OR @bcardsupdays='999',NULL,@bcardsupdays),
+      acardsupdays = IF(@acardsupdays='' OR @acardsupdays='999',NULL,@acardsupdays),
+      bressupdays = IF(@bressupdays='' OR @bressupdays='999',NULL,@bressupdays),
+      aressupdays = IF(@aressupdays='' OR @aressupdays='999',NULL,@aressupdays),
+      gisupdays = IF(@gisupdays='' OR @gisupdays='999',NULL,@gisupdays),
+      liversupdays = IF(@liversupdays='' OR @liversupdays='999',NULL,@liversupdays),
+      neurosupdays = IF(@neurosupdays='' OR @neurosupdays='999',NULL,@neurosupdays),
+      rensupdays = IF(@rensupdays='' OR @rensupdays='999',NULL,@rensupdays),
+      dermsupdays = IF(@dermsupdays='' OR @dermsupdays='999',NULL,@dermsupdays),
+      orgsupmax = NULLIF(@orgsupmax,''),
+      ccunitfun = NULLIF(@ccunitfun,''),
+      unitbedconfig = NULLIF(@unitbedconfig,''),
+      bestmatch = NULLIF(@bestmatch,'')
 indexes:
   # Primary care data
   # patid
@@ -252,3 +571,113 @@ indexes:
   - CREATE INDEX x_{practice}_region ON {dataDb}.{practice} (region);
   - CREATE INDEX x_{problem}_parentprobrelid ON {dataDb}.{problem} (parentprobrelid);
   - CREATE INDEX x_{problem}_signid ON {dataDb}.{problem} (signid);
+  # Linkage data (index all fields)
+  # hesPatient
+  - CREATE INDEX x_{hesPatient}_pracid ON {dataDb}.{hesPatient} (pracid);
+  - CREATE INDEX x_{hesPatient}_cprd_mpsid ON {dataDb}.{hesPatient} (cprd_mpsid);
+  - CREATE INDEX x_{hesPatient}_gen_ethnicity ON {dataDb}.{hesPatient} (gen_ethnicity);
+  # hesHospital
+  - CREATE INDEX x_{hesHospital}_patid ON {dataDb}.{hesHospital} (patid);
+  - CREATE INDEX x_{hesHospital}_spno ON {dataDb}.{hesHospital} (spno);
+  - CREATE INDEX x_{hesHospital}_admidate ON {dataDb}.{hesHospital} (admidate);
+  - CREATE INDEX x_{hesHospital}_discharged ON {dataDb}.{hesHospital} (discharged);
+  - CREATE INDEX x_{hesHospital}_admimeth ON {dataDb}.{hesHospital} (admimeth);
+  - CREATE INDEX x_{hesHospital}_admisorc ON {dataDb}.{hesHospital} (admisorc);
+  - CREATE INDEX x_{hesHospital}_disdest ON {dataDb}.{hesHospital} (disdest);
+  - CREATE INDEX x_{hesHospital}_dismeth ON {dataDb}.{hesHospital} (dismeth);
+  - CREATE INDEX x_{hesHospital}_duration ON {dataDb}.{hesHospital} (duration);
+  - CREATE INDEX x_{hesHospital}_elecdate ON {dataDb}.{hesHospital} (elecdate);
+  - CREATE INDEX x_{hesHospital}_elecdur ON {dataDb}.{hesHospital} (elecdur);
+  # hesEpisodes
+  - CREATE INDEX x_{hesEpisodes}_patid ON {dataDb}.{hesEpisodes} (patid);
+  - CREATE INDEX x_{hesEpisodes}_spno ON {dataDb}.{hesEpisodes} (spno);
+  - CREATE INDEX x_{hesEpisodes}_epikey ON {dataDb}.{hesEpisodes} (epikey);
+  - CREATE INDEX x_{hesEpisodes}_admidate ON {dataDb}.{hesEpisodes} (admidate);
+  - CREATE INDEX x_{hesEpisodes}_epistart ON {dataDb}.{hesEpisodes} (epistart);
+  - CREATE INDEX x_{hesEpisodes}_epiend ON {dataDb}.{hesEpisodes} (epiend);
+  - CREATE INDEX x_{hesEpisodes}_discharged ON {dataDb}.{hesEpisodes} (discharged);
+  - CREATE INDEX x_{hesEpisodes}_eorder ON {dataDb}.{hesEpisodes} (eorder);
+  - CREATE INDEX x_{hesEpisodes}_epidur ON {dataDb}.{hesEpisodes} (epidur);
+  - CREATE INDEX x_{hesEpisodes}_epitype ON {dataDb}.{hesEpisodes} (epitype);
+  - CREATE INDEX x_{hesEpisodes}_admimeth ON {dataDb}.{hesEpisodes} (admimeth);
+  - CREATE INDEX x_{hesEpisodes}_admisorc ON {dataDb}.{hesEpisodes} (admisorc);
+  - CREATE INDEX x_{hesEpisodes}_disdest ON {dataDb}.{hesEpisodes} (disdest);
+  - CREATE INDEX x_{hesEpisodes}_dismeth ON {dataDb}.{hesEpisodes} (dismeth);
+  - CREATE INDEX x_{hesEpisodes}_mainspef ON {dataDb}.{hesEpisodes} (mainspef);
+  - CREATE INDEX x_{hesEpisodes}_tretspef ON {dataDb}.{hesEpisodes} (tretspef);
+  - CREATE INDEX x_{hesEpisodes}_pconsult ON {dataDb}.{hesEpisodes} (pconsult);
+  - CREATE INDEX x_{hesEpisodes}_intmanig ON {dataDb}.{hesEpisodes} (intmanig);
+  - CREATE INDEX x_{hesEpisodes}_classpat ON {dataDb}.{hesEpisodes} (classpat);
+  - CREATE INDEX x_{hesEpisodes}_firstreg ON {dataDb}.{hesEpisodes} (firstreg);
+  - CREATE INDEX x_{hesEpisodes}_ethnos ON {dataDb}.{hesEpisodes} (ethnos);
+  # hesDiagnosisEpi
+  - CREATE INDEX x_{hesDiagnosisEpi}_patid ON {dataDb}.{hesDiagnosisEpi} (patid);
+  - CREATE INDEX x_{hesDiagnosisEpi}_spno ON {dataDb}.{hesDiagnosisEpi} (spno);
+  - CREATE INDEX x_{hesDiagnosisEpi}_epikey ON {dataDb}.{hesDiagnosisEpi} (epikey);
+  - CREATE INDEX x_{hesDiagnosisEpi}_epistart ON {dataDb}.{hesDiagnosisEpi} (epistart);
+  - CREATE INDEX x_{hesDiagnosisEpi}_epiend ON {dataDb}.{hesDiagnosisEpi} (epiend);
+  - CREATE INDEX x_{hesDiagnosisEpi}_ICD ON {dataDb}.{hesDiagnosisEpi} (ICD);
+  - CREATE INDEX x_{hesDiagnosisEpi}_ICDx ON {dataDb}.{hesDiagnosisEpi} (ICDx);
+  - CREATE INDEX x_{hesDiagnosisEpi}_d_order ON {dataDb}.{hesDiagnosisEpi} (d_order);
+  # hesDiagnosisHosp
+  - CREATE INDEX x_{hesDiagnosisHosp}_patid ON {dataDb}.{hesDiagnosisHosp} (patid);
+  - CREATE INDEX x_{hesDiagnosisHosp}_spno ON {dataDb}.{hesDiagnosisHosp} (spno);
+  - CREATE INDEX x_{hesDiagnosisHosp}_admidate ON {dataDb}.{hesDiagnosisHosp} (admidate);
+  - CREATE INDEX x_{hesDiagnosisHosp}_discharged ON {dataDb}.{hesDiagnosisHosp} (discharged);
+  - CREATE INDEX x_{hesDiagnosisHosp}_ICD ON {dataDb}.{hesDiagnosisHosp} (ICD);
+  - CREATE INDEX x_{hesDiagnosisHosp}_ICDx ON {dataDb}.{hesDiagnosisHosp} (ICDx);
+  # hesPrimaryDiagHosp
+  - CREATE INDEX x_{hesPrimaryDiagHosp}_patid ON {dataDb}.{hesPrimaryDiagHosp} (patid);
+  - CREATE INDEX x_{hesPrimaryDiagHosp}_spno ON {dataDb}.{hesPrimaryDiagHosp} (spno);
+  - CREATE INDEX x_{hesPrimaryDiagHosp}_admidate ON {dataDb}.{hesPrimaryDiagHosp} (admidate);
+  - CREATE INDEX x_{hesPrimaryDiagHosp}_discharged ON {dataDb}.{hesPrimaryDiagHosp} (discharged);
+  - CREATE INDEX x_{hesPrimaryDiagHosp}_ICD_PRIMARY ON {dataDb}.{hesPrimaryDiagHosp} (ICD_PRIMARY);
+  - CREATE INDEX x_{hesPrimaryDiagHosp}_ICDx ON {dataDb}.{hesPrimaryDiagHosp} (ICDx);
+  # hesProceduresEpi
+  - CREATE INDEX x_{hesProceduresEpi}_patid ON {dataDb}.{hesProceduresEpi} (patid);
+  - CREATE INDEX x_{hesProceduresEpi}_spno ON {dataDb}.{hesProceduresEpi} (spno);
+  - CREATE INDEX x_{hesProceduresEpi}_epikey ON {dataDb}.{hesProceduresEpi} (epikey);
+  - CREATE INDEX x_{hesProceduresEpi}_admidate ON {dataDb}.{hesProceduresEpi} (admidate);
+  - CREATE INDEX x_{hesProceduresEpi}_epistart ON {dataDb}.{hesProceduresEpi} (epistart);
+  - CREATE INDEX x_{hesProceduresEpi}_epiend ON {dataDb}.{hesProceduresEpi} (epiend);
+  - CREATE INDEX x_{hesProceduresEpi}_discharged ON {dataDb}.{hesProceduresEpi} (discharged);
+  - CREATE INDEX x_{hesProceduresEpi}_OPCS ON {dataDb}.{hesProceduresEpi} (OPCS);
+  - CREATE INDEX x_{hesProceduresEpi}_evdate ON {dataDb}.{hesProceduresEpi} (evdate);
+  - CREATE INDEX x_{hesProceduresEpi}_p_order ON {dataDb}.{hesProceduresEpi} (p_order);
+  # hesCcare
+  - CREATE INDEX x_{hesCcare}_patid ON {dataDb}.{hesCcare} (patid);
+  - CREATE INDEX x_{hesCcare}_spno ON {dataDb}.{hesCcare} (spno);
+  - CREATE INDEX x_{hesCcare}_epikey ON {dataDb}.{hesCcare} (epikey);
+  - CREATE INDEX x_{hesCcare}_admidate ON {dataDb}.{hesCcare} (admidate);
+  - CREATE INDEX x_{hesCcare}_discharged ON {dataDb}.{hesCcare} (discharged);
+  - CREATE INDEX x_{hesCcare}_epistart ON {dataDb}.{hesCcare} (epistart);
+  - CREATE INDEX x_{hesCcare}_epiend ON {dataDb}.{hesCcare} (epiend);
+  - CREATE INDEX x_{hesCcare}_eorder ON {dataDb}.{hesCcare} (eorder);
+  - CREATE INDEX x_{hesCcare}_ccstartdate ON {dataDb}.{hesCcare} (ccstartdate);
+  - CREATE INDEX x_{hesCcare}_ccstarttime ON {dataDb}.{hesCcare} (ccstarttime);
+  - CREATE INDEX x_{hesCcare}_ccdisrdydate ON {dataDb}.{hesCcare} (ccdisrdydate);
+  - CREATE INDEX x_{hesCcare}_ccdisrdytime ON {dataDb}.{hesCcare} (ccdisrdytime);
+  - CREATE INDEX x_{hesCcare}_ccdisdate ON {dataDb}.{hesCcare} (ccdisdate);
+  - CREATE INDEX x_{hesCcare}_ccdistime ON {dataDb}.{hesCcare} (ccdistime);
+  - CREATE INDEX x_{hesCcare}_ccadmitype ON {dataDb}.{hesCcare} (ccadmitype);
+  - CREATE INDEX x_{hesCcare}_ccadmisorc ON {dataDb}.{hesCcare} (ccadmisorc);
+  - CREATE INDEX x_{hesCcare}_ccsorcloc ON {dataDb}.{hesCcare} (ccsorcloc);
+  - CREATE INDEX x_{hesCcare}_ccdisstat ON {dataDb}.{hesCcare} (ccdisstat);
+  - CREATE INDEX x_{hesCcare}_ccdisdest ON {dataDb}.{hesCcare} (ccdisdest);
+  - CREATE INDEX x_{hesCcare}_ccdisloc ON {dataDb}.{hesCcare} (ccdisloc);
+  - CREATE INDEX x_{hesCcare}_cclev2days ON {dataDb}.{hesCcare} (cclev2days);
+  - CREATE INDEX x_{hesCcare}_cclev3days ON {dataDb}.{hesCcare} (cclev3days);
+  - CREATE INDEX x_{hesCcare}_bcardsupdays ON {dataDb}.{hesCcare} (bcardsupdays);
+  - CREATE INDEX x_{hesCcare}_acardsupdays ON {dataDb}.{hesCcare} (acardsupdays);
+  - CREATE INDEX x_{hesCcare}_bressupdays ON {dataDb}.{hesCcare} (bressupdays);
+  - CREATE INDEX x_{hesCcare}_aressupdays ON {dataDb}.{hesCcare} (aressupdays);
+  - CREATE INDEX x_{hesCcare}_gisupdays ON {dataDb}.{hesCcare} (gisupdays);
+  - CREATE INDEX x_{hesCcare}_liversupdays ON {dataDb}.{hesCcare} (liversupdays);
+  - CREATE INDEX x_{hesCcare}_neurosupdays ON {dataDb}.{hesCcare} (neurosupdays);
+  - CREATE INDEX x_{hesCcare}_rensupdays ON {dataDb}.{hesCcare} (rensupdays);
+  - CREATE INDEX x_{hesCcare}_dermsupdays ON {dataDb}.{hesCcare} (dermsupdays);
+  - CREATE INDEX x_{hesCcare}_orgsupmax ON {dataDb}.{hesCcare} (orgsupmax);
+  - CREATE INDEX x_{hesCcare}_ccunitfun ON {dataDb}.{hesCcare} (ccunitfun);
+  - CREATE INDEX x_{hesCcare}_unitbedconfig ON {dataDb}.{hesCcare} (unitbedconfig);
+  - CREATE INDEX x_{hesCcare}_bestmatch ON {dataDb}.{hesCcare} (bestmatch);
+  - CREATE INDEX x_{hesCcare}_ccapcrel ON {dataDb}.{hesCcare} (ccapcrel);
