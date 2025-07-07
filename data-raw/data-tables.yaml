@@ -13,6 +13,7 @@ naming:
   hesPatient: hes_patient
   hesPrimaryDiagHosp: hes_primary_diag_hosp
   hesProceduresEpi: hes_procedures_epi
+  patientImd: patient_imdcomposite_aurum
 tables:
   consultation:
     drop: |
@@ -519,6 +520,25 @@ tables:
       ccunitfun = NULLIF(@ccunitfun,''),
       unitbedconfig = NULLIF(@unitbedconfig,''),
       bestmatch = NULLIF(@bestmatch,'')
+  patientImd:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{patientImd}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{patientImd}
+      (patid BIGINT UNSIGNED NOT NULL,
+      pracid MEDIUMINT,
+      imd_decile TINYINT,
+      PRIMARY KEY (patid))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{patientImd}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, pracid, @imd_decile)
+      SET imd_decile = NULLIF(@imd_decile,'')
 indexes:
   # Primary care data
   # patid
@@ -681,3 +701,6 @@ indexes:
   - CREATE INDEX x_{hesCcare}_unitbedconfig ON {dataDb}.{hesCcare} (unitbedconfig);
   - CREATE INDEX x_{hesCcare}_bestmatch ON {dataDb}.{hesCcare} (bestmatch);
   - CREATE INDEX x_{hesCcare}_ccapcrel ON {dataDb}.{hesCcare} (ccapcrel);
+  # patientImd
+  - CREATE INDEX x_{patientImd}_pracid ON {dataDb}.{patientImd} (pracid);
+  - CREATE INDEX x_{patientImd}_imd_decile ON {dataDb}.{patientImd} (imd_decile);
