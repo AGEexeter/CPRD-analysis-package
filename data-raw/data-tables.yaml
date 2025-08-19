@@ -14,6 +14,7 @@ naming:
   hesPrimaryDiagHosp: hes_primary_diag_hosp
   hesProceduresEpi: hes_procedures_epi
   patientImd: patient_imdcomposite_aurum
+  onsDeath: onsdeath_patient
 tables:
   consultation:
     drop: |
@@ -539,6 +540,67 @@ tables:
       IGNORE 1 LINES
       (patid, pracid, @imd_decile)
       SET imd_decile = NULLIF(@imd_decile,'')
+  onsDeath:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{onsDeath}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{onsDeath}
+      (patid BIGINT UNSIGNED NOT NULL,
+      pracid MEDIUMINT,
+      gen_death_id BIGINT UNSIGNED,
+      n_patid_death SMALLINT,
+      match_rank TINYINT,
+      dor DATE,
+      dod DATE,
+      dod_partial SMALLINT,
+      nhs_indicator TINYINT,
+      pod_category VARCHAR(21),
+      cause VARCHAR(5),
+      cause1 VARCHAR(5),
+      cause2 VARCHAR(5),
+      cause3 VARCHAR(5),
+      cause4 VARCHAR(5),
+      cause5 VARCHAR(5),
+      cause6 VARCHAR(5),
+      cause7 VARCHAR(5),
+      cause8 VARCHAR(5),
+      cause9 VARCHAR(5),
+      cause10 VARCHAR(5),
+      cause11 VARCHAR(5),
+      cause12 VARCHAR(5),
+      cause13 VARCHAR(5),
+      cause14 VARCHAR(5),
+      cause15 VARCHAR(5),
+      PRIMARY KEY (patid))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{onsDeath}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, pracid, gen_death_id, n_patid_death, match_rank, @dor, @dod, @dod_partial, nhs_indicator, @pod_category, @cause, @cause1, @cause2, @cause3, @cause4, @cause5, @cause6, @cause7, @cause8, @cause9, @cause10, @cause11, @cause12, @cause13, @cause14, @cause15)
+      SET dor = STR_TO_DATE(@dor,'%d/%m/%Y'),
+      dod = STR_TO_DATE(NULLIF(@dod,''),'%d/%m/%Y'),
+      dod_partial = IF(@dod_partial='' OR @dod_partial='--',NULL,SUBSTR(@dod_partial,1,4)),
+      pod_category = NULLIF(@pod_category,''),
+      cause = NULLIF(@cause,''),
+      cause1 = NULLIF(@cause1,''),
+      cause2 = NULLIF(@cause2,''),
+      cause3 = NULLIF(@cause3,''),
+      cause4 = NULLIF(@cause4,''),
+      cause5 = NULLIF(@cause5,''),
+      cause6 = NULLIF(@cause6,''),
+      cause7 = NULLIF(@cause7,''),
+      cause8 = NULLIF(@cause8,''),
+      cause9 = NULLIF(@cause9,''),
+      cause10 = NULLIF(@cause10,''),
+      cause11 = NULLIF(@cause11,''),
+      cause12 = NULLIF(@cause12,''),
+      cause13 = NULLIF(@cause13,''),
+      cause14 = NULLIF(@cause14,''),
+      cause15 = NULLIF(@cause15,'')
 indexes:
   # Primary care data
   # patid
@@ -704,3 +766,29 @@ indexes:
   # patientImd
   - CREATE INDEX x_{patientImd}_pracid ON {dataDb}.{patientImd} (pracid);
   - CREATE INDEX x_{patientImd}_imd_decile ON {dataDb}.{patientImd} (imd_decile);
+  # onsDeath
+  - CREATE INDEX x_{onsDeath}_pracid ON {dataDb}.{onsDeath} (pracid);
+  - CREATE INDEX x_{onsDeath}_gen_death_id ON {dataDb}.{onsDeath} (gen_death_id);
+  - CREATE INDEX x_{onsDeath}_n_patid_death ON {dataDb}.{onsDeath} (n_patid_death);
+  - CREATE INDEX x_{onsDeath}_match_rank ON {dataDb}.{onsDeath} (match_rank);
+  - CREATE INDEX x_{onsDeath}_dor ON {dataDb}.{onsDeath} (dor);
+  - CREATE INDEX x_{onsDeath}_dod ON {dataDb}.{onsDeath} (dod);
+  - CREATE INDEX x_{onsDeath}_dod_partial ON {dataDb}.{onsDeath} (dod_partial);
+  - CREATE INDEX x_{onsDeath}_nhs_indicator ON {dataDb}.{onsDeath} (nhs_indicator);
+  - CREATE INDEX x_{onsDeath}_pod_category ON {dataDb}.{onsDeath} (pod_category);
+  - CREATE INDEX x_{onsDeath}_cause ON {dataDb}.{onsDeath} (cause);
+  - CREATE INDEX x_{onsDeath}_cause1 ON {dataDb}.{onsDeath} (cause1);
+  - CREATE INDEX x_{onsDeath}_cause2 ON {dataDb}.{onsDeath} (cause2);
+  - CREATE INDEX x_{onsDeath}_cause3 ON {dataDb}.{onsDeath} (cause3);
+  - CREATE INDEX x_{onsDeath}_cause4 ON {dataDb}.{onsDeath} (cause4);
+  - CREATE INDEX x_{onsDeath}_cause5 ON {dataDb}.{onsDeath} (cause5);
+  - CREATE INDEX x_{onsDeath}_cause6 ON {dataDb}.{onsDeath} (cause6);
+  - CREATE INDEX x_{onsDeath}_cause7 ON {dataDb}.{onsDeath} (cause7);
+  - CREATE INDEX x_{onsDeath}_cause8 ON {dataDb}.{onsDeath} (cause8);
+  - CREATE INDEX x_{onsDeath}_cause9 ON {dataDb}.{onsDeath} (cause9);
+  - CREATE INDEX x_{onsDeath}_cause10 ON {dataDb}.{onsDeath} (cause10);
+  - CREATE INDEX x_{onsDeath}_cause11 ON {dataDb}.{onsDeath} (cause11);
+  - CREATE INDEX x_{onsDeath}_cause12 ON {dataDb}.{onsDeath} (cause12);
+  - CREATE INDEX x_{onsDeath}_cause13 ON {dataDb}.{onsDeath} (cause13);
+  - CREATE INDEX x_{onsDeath}_cause14 ON {dataDb}.{onsDeath} (cause14);
+  - CREATE INDEX x_{onsDeath}_cause15 ON {dataDb}.{onsDeath} (cause15);
