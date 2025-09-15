@@ -1,12 +1,18 @@
 naming:
-  medDict: aurum_med_dict
-  productDict: aurum_prod_dict 
+  medDict: aurum_med_dict_dec24
+  productDict: aurum_prod_dict_dec24
+  icd10Dict: icd10_dict
+  opcs4Dict: opsc_dict
 keys:
   medDict: "medcodeid"
   productDict: "prodcodeid"
+  icd10Dict: "icd10"
+  opcs4Dict: "opcs4"
 paths:
-  medDict: "{refPath}/202312_EMISMedicalDictionary.txt"
-  productDict: "{refPath}/202312_EMISProductDictionary.txt"
+  medDict: "{refPath}/202412_EMISMedicalDictionary.txt"
+  productDict: "{refPath}/202412_EMISProductDictionary.txt"
+  icd10Dict: "{refPath}/ICD10_code_dictionary.txt"
+  opcs4Dict: "{refPath}/OPCS4_code_dictionary.txt"
 tables:
   medDict:
     drop: |
@@ -67,3 +73,53 @@ tables:
       drugsubstancename = NULLIF(@orig_drugsubstancename,''),
       substancestrength = NULLIF(@orig_substancestrength,''),
       bnfchapter = NULLIF(@orig_bnfchapter,'');
+  icd10Dict:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{icd10Dict}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{icd10Dict}
+      (icd10 VARCHAR(6),
+      alt_code VARCHAR(5),
+      usage_uk TINYINT,
+      description VARCHAR(200),
+      modifier_4 VARCHAR(100),
+      modifier_5 VARCHAR(100),
+      qualifiers VARCHAR(200),
+      gender_mask TINYINT,
+      min_age TINYINT,
+      max_age TINYINT,
+      tree_description VARCHAR(200),
+      PRIMARY KEY (icd10))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci;
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{icd10Dict}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\n'
+      IGNORE 1 LINES
+      (icd10, alt_code, usage_uk, description, @modifier_4, @modifier_5, @qualifiers, @gender_mask, @min_age, @max_age, @tree_description)
+      SET modifier_4 = NULLIF(@modifier_4,''),
+      modifier_5 = NULLIF(@modifier_5,''),
+      qualifiers = NULLIF(@qualifiers,''),
+      gender_mask = NULLIF(@gender_mask,''),
+      min_age = NULLIF(@min_age,''),
+      max_age = NULLIF(@max_age,''),
+      tree_description = NULLIF(@tree_description,'');
+  opcs4Dict:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{opcs4Dict}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{opcs4Dict}
+      (code VARCHAR(5),
+      description VARCHAR(200),
+      PRIMARY KEY (opcs4))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci;
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{opcs4Dict}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (opcs4, description);
