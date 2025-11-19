@@ -3,16 +3,19 @@ naming:
   productDict: aurum_prod_dict_dec24
   icd10Dict: icd10_dict
   opcs4Dict: opsc_dict
+  bnfPolypharmacyLookup: aurum_bnf_polypharmacy_lookup
 keys:
   medDict: "medcodeid"
   productDict: "prodcodeid"
   icd10Dict: "icd10"
   opcs4Dict: "opcs4"
+  bnfPolypharmacyLookup: "prodcodeid"
 paths:
   medDict: "{refPath}/202412_EMISMedicalDictionary.txt"
   productDict: "{refPath}/202412_EMISProductDictionary.txt"
   icd10Dict: "{refPath}/ICD10_code_dictionary.txt"
   opcs4Dict: "{refPath}/OPCS4_code_dictionary.txt"
+  bnfPolypharmacyLookup: "{refPath}/CPRD_BNF_polypharmacy_lookup.txt"
 tables:
   medDict:
     drop: |
@@ -123,3 +126,20 @@ tables:
       LINES TERMINATED BY '\r\n'
       IGNORE 1 LINES
       (opcs4, description);
+  bnfPolypharmacyLookup:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{bnfPolypharmacyLookup}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{bnfPolypharmacyLookup}
+      (prodcodeid BIGINT,
+      BNF_6digit VARCHAR(6),
+      PRIMARY KEY (prodcodeid))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci;
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{bnfPolypharmacyLookup}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (prodcodeid, BNF_6digit;);
