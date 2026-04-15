@@ -1,7 +1,7 @@
 naming:
   consultation: consultation
   drugIssue: drugissue
-  observation: observation
+  observation: observation_v5
   patient: patient
   practice: practice
   problem: problem
