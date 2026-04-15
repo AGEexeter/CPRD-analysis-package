@@ -4,18 +4,21 @@ naming:
   icd10Dict: icd10_dict
   opcs4Dict: opsc_dict
   bnfPolypharmacyLookup: aurum_bnf_polypharmacy_lookup
+  TdsImdLookup: tds_imd_lookup
 keys:
   medDict: "medcodeid"
   productDict: "prodcodeid"
   icd10Dict: "icd10"
   opcs4Dict: "opcs4"
   bnfPolypharmacyLookup: "prodcodeid"
+  TdsImdLookup: "imd_decide"
 paths:
   medDict: "{refPath}/202412_EMISMedicalDictionary.txt"
   productDict: "{refPath}/202412_EMISProductDictionary.txt"
   icd10Dict: "{refPath}/ICD10_code_dictionary.txt"
   opcs4Dict: "{refPath}/OPCS4_code_dictionary.txt"
   bnfPolypharmacyLookup: "{refPath}/CPRD_BNF_polypharmacy_lookup.txt"
+  TdsImdLookup: "{refPath}/TDS_IMD_lookup.txt"
 tables:
   medDict:
     drop: |
@@ -143,3 +146,20 @@ tables:
       LINES TERMINATED BY '\r\n'
       IGNORE 1 LINES
       (prodcodeid, BNF_6digit;);
+  TdsImdLookup:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{TdsImdLookup}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{TdsImdLookup}
+      (imd_decile TINYINT,
+      tds_2011 DECIMAL(4),
+      PRIMARY KEY (imd_decile))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci;
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{TdsImdLookup}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (imd_decile, tds_2011;);
