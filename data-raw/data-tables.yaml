@@ -14,6 +14,7 @@ naming:
   hesPrimaryDiagHosp: hes_primary_diag_hosp
   hesProceduresEpi: hes_procedures_epi
   patientImd: patient_imdcomposite_aurum
+  ethnicity: ethnicity_aurum
   onsDeath: onsdeath_patient
 tables:
   consultation:
@@ -540,6 +541,24 @@ tables:
       IGNORE 1 LINES
       (patid, pracid, @imd_decile)
       SET imd_decile = NULLIF(@imd_decile,'')
+  ethnicity:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{ethnicity}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{ethnicity}
+      (patid BIGINT UNSIGNED NOT NULL,
+      ethnic_6 TINYINT,
+      PRIMARY KEY (patid))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{ethnicity}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, @ethnic_6)
+      SET ethnic_6 = NULLIF(@ethnic_6,'')
   onsDeath:
     drop: |
       DROP TABLE IF EXISTS {dataDb}.{onsDeath}
@@ -766,6 +785,9 @@ indexes:
   # patientImd
   - CREATE INDEX x_{patientImd}_pracid ON {dataDb}.{patientImd} (pracid);
   - CREATE INDEX x_{patientImd}_imd_decile ON {dataDb}.{patientImd} (imd_decile);
+  # ethnicity
+  - CREATE INDEX x_{ethnicity}_patid ON {dataDb}.{ethnicity} (patid);
+  - CREATE INDEX x_{ethnicity}_ethnic_6 ON {dataDb}.{ethnicity} (ethnic_6);
   # onsDeath
   - CREATE INDEX x_{onsDeath}_pracid ON {dataDb}.{onsDeath} (pracid);
   - CREATE INDEX x_{onsDeath}_gen_death_id ON {dataDb}.{onsDeath} (gen_death_id);
