@@ -16,6 +16,7 @@ naming:
   patientImd: patient_imdcomposite_aurum
   ethnicity: ethnicity_aurum
   onsDeath: onsdeath_patient
+  linkageEligibility: linkage_eligibility_aurum
 tables:
   consultation:
     drop: |
