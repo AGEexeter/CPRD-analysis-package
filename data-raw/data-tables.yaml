@@ -621,7 +621,7 @@ tables:
       cause13 = NULLIF(@cause13,''),
       cause14 = NULLIF(@cause14,''),
       cause15 = NULLIF(@cause15,'')
-linkageEligibility:
+  linkageEligibility:
     drop: |
       DROP TABLE IF EXISTS {dataDb}.{linkageEligibility}
     create: |
