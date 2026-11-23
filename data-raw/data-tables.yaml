@@ -621,6 +621,48 @@ tables:
       cause13 = NULLIF(@cause13,''),
       cause14 = NULLIF(@cause14,''),
       cause15 = NULLIF(@cause15,'')
+linkageEligibility:
+    drop: |
+      DROP TABLE IF EXISTS {dataDb}.{linkageEligibility}
+    create: |
+      CREATE TABLE IF NOT EXISTS {dataDb}.{linkageEligibility}
+      (patid BIGINT UNSIGNED NOT NULL,
+      pracid MEDIUMINT,
+      linkyear SMALLINT,
+      hes_apc_e TINYINT,
+      ons_death_e TINYINT,
+      lsoa_e TINYINT,
+      sgss_e TINYINT,
+      chess_e TINYINT,
+      hes_op_e TINYINT,
+      hes_ae_e TINYINT,
+      hes_did_e TINYINT,
+      cr_e TINYINT,
+      sact_e TINYINT,
+      rtds_e TINYINT,
+      PRIMARY KEY (patid))
+      ENGINE=MYISAM
+      CHARSET=latin1 COLLATE=latin1_general_ci
+    load: |
+      LOAD DATA INFILE '{path}' IGNORE
+      INTO TABLE {dataDb}.{linkageEligibility}
+      FIELDS TERMINATED BY '\t'
+      LINES TERMINATED BY '\r\n'
+      IGNORE 1 LINES
+      (patid, @orig_pracid, @orig_linkyear, @orig_hes_apc_e, @orig_ons_death_e, @orig_lsoa_e, @orig_sgss_e, @orig_chess_e, @orig_hes_op_e, @orig_hes_ae_e, @orig_hes_did_e, @orig_cr_e, @orig_sact_e, @orig_rtds_e)
+      SET pracid = NULLIF(@orig_pracid,''),
+      linkyear = NULLIF(@orig_linkyear,''),
+      hes_apc_e = NULLIF(@orig_hes_apc_e,''),
+      ons_death_e = NULLIF(@orig_ons_death_e,''),
+      lsoa_e = NULLIF(@orig_lsoa_e,''),
+      sgss_e = NULLIF(@orig_sgss_e,''),
+      chess_e = NULLIF(@orig_chess_e,''),
+      hes_op_e = NULLIF(@orig_hes_op_e,''),
+      hes_ae_e = NULLIF(@orig_hes_ae_e,''),
+      hes_did_e = NULLIF(@orig_hes_did_e,''),
+      cr_e = NULLIF(@orig_cr_e,''),
+      sact_e = NULLIF(@orig_sact_e,''),
+      rtds_e = NULLIF(@orig_rtds_e,'')
 indexes:
   # Primary care data
   # patid
@@ -815,3 +857,6 @@ indexes:
   - CREATE INDEX x_{onsDeath}_cause13 ON {dataDb}.{onsDeath} (cause13);
   - CREATE INDEX x_{onsDeath}_cause14 ON {dataDb}.{onsDeath} (cause14);
   - CREATE INDEX x_{onsDeath}_cause15 ON {dataDb}.{onsDeath} (cause15);
+  # linkageEligibility
+  - CREATE INDEX x_{linkageEligibility}_patid ON {dataDb}.{linkageEligibility} (patid);
+  - CREATE INDEX x_{linkageEligibility}_pracid ON {dataDb}.{linkageEligibility} (pracid);
